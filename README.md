@@ -4,7 +4,7 @@ An autojump implementation applicable to **any shell** and **any OS** by restori
 
 Keep things simple and portable, do not fuck your brain.
 
-### Common Configurtions
+### Common Configurations
 
 ```bash
 export AUTOJMP_MAX_CACHE=999
