@@ -33,12 +33,12 @@ j(){
 Using it in this way:
 
 ```zsh
-➜  github j desk git
-➜  github pwd
-/c/Users/twshe/Desktop/github
-➜  github j git
-➜  github pwd
-/c/Users/twshe/github
+github> j desk git
+github> pwd
+/c/Users/<USER>/Desktop/github
+github> j git
+github> pwd
+/c/Users/<USER>/github
 ```
 
 ### Motivation
