@@ -7,8 +7,8 @@ import sys
 root = Path(os.environ.get('AUTOJMP_DIR', '~/.autojmp')).expanduser()
 
 class AutoJump:
-    max_cache = os.environ.get("AUTOJMP_MAX_CACHE", 999)
-    word_analyze_len = os.environ.get("AUTOJMP_WORD_ANA_LEN", 3)
+    max_cache = max(1, int(os.environ.get("AUTOJMP_MAX_CACHE", 999)))
+    word_analyze_len = max(1, int(os.environ.get("AUTOJMP_WORD_ANA_LEN", 3)))
 
 class FileIO:
 
