@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 from pathlib import Path
 
-version = "0.1.1"
+version = "0.1.2"
 with Path('README.md').open() as readme:
     readme = readme.read()
 

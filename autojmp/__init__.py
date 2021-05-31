@@ -18,7 +18,7 @@ class FileIO:
         self._histories = None
         if not file_path.exists():
             file_path.parent.mkdir(mode=0o777, parents=True, exist_ok=True)
-            with file_path.open('w'):
+            with file_path.open('w', encoding='utf8'):
                 pass
 
     @property
@@ -28,7 +28,7 @@ class FileIO:
 
     def _load_history(self):
         if self._histories is None:
-            with self.file_path.open('r') as fr:
+            with self.file_path.open('r', encoding='utf8') as fr:
                 self._histories = list(map(str.rstrip, fr))
 
     def __getitem__(self, item):
@@ -41,16 +41,16 @@ class FileIO:
         yield from self.histories
 
     def writeline(self, text):
-        with self.file_path.open('a+') as fw:
+        with self.file_path.open('a+', encoding='utf8') as fw:
             fw.write(text)
             fw.write('\n')
         self.histories.append(text)
         n = self._max_cache_getter()
 
         if len(self.histories) > n:
-            with self.file_path.open('r') as fr:
+            with self.file_path.open('r', encoding='utf8') as fr:
                 contents = list(fr)
-            with self.file_path.open('w') as fw:
+            with self.file_path.open('w', encoding='utf8') as fw:
                 for each in contents[-n:]:
                     fw.write(each)
 
