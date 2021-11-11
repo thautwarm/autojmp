@@ -41,6 +41,18 @@ github> pwd
 /c/Users/<USER>/github
 ```
 
+### Powerh Shell
+
+```powershell
+function cd() {
+  Set-Location "$@" || return
+  ajmp update "$pwd"
+}
+
+function j() {
+    Set-Location $(ajmp complete "$@")
+}
+```
 ### Motivation
 
 Currently I have to work on Windows and I do need `zsh`. This leads me to MSYS2.
