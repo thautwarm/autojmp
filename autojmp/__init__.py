@@ -4,21 +4,22 @@ from wisepy2 import wise
 import os
 import sys
 
-root = Path(os.environ.get('AUTOJMP_DIR', '~/.autojmp')).expanduser()
+root = Path(os.environ.get("AUTOJMP_DIR", "~/.autojmp")).expanduser()
+
 
 class AutoJump:
     max_cache = max(1, int(os.environ.get("AUTOJMP_MAX_CACHE", 999)))
     word_analyze_len = max(1, int(os.environ.get("AUTOJMP_WORD_ANA_LEN", 3)))
 
-class FileIO:
 
+class FileIO:
     def __init__(self, file_path: Path, cache_size_getter):
         self.file_path = file_path
         self._max_cache_getter = cache_size_getter
         self._histories = None
         if not file_path.exists():
             file_path.parent.mkdir(mode=0o777, parents=True, exist_ok=True)
-            with file_path.open('w', encoding='utf8'):
+            with file_path.open("w", encoding="utf8"):
                 pass
 
     @property
@@ -28,7 +29,7 @@ class FileIO:
 
     def _load_history(self):
         if self._histories is None:
-            with self.file_path.open('r', encoding='utf8') as fr:
+            with self.file_path.open("r", encoding="utf8") as fr:
                 self._histories = list(map(str.rstrip, fr))
 
     def __getitem__(self, item):
@@ -41,23 +42,21 @@ class FileIO:
         yield from self.histories
 
     def writeline(self, text):
-        with self.file_path.open('a+', encoding='utf8') as fw:
+        with self.file_path.open("a+", encoding="utf8") as fw:
             fw.write(text)
-            fw.write('\n')
+            fw.write("\n")
         self.histories.append(text)
         n = self._max_cache_getter()
 
         if len(self.histories) > n:
-            with self.file_path.open('r', encoding='utf8') as fr:
+            with self.file_path.open("r", encoding="utf8") as fr:
                 contents = list(fr)
-            with self.file_path.open('w', encoding='utf8') as fw:
+            with self.file_path.open("w", encoding="utf8") as fw:
                 for each in contents[-n:]:
                     fw.write(each)
 
 
-
 class _HistVectorGatherIO:
-
     def __init__(self, file_io: FileIO):
         self._file_io = file_io
         self._vectors = list(map(to_vec, file_io))
@@ -65,8 +64,10 @@ class _HistVectorGatherIO:
     def __len__(self):
         return len(self._vectors)
 
-
     def writeline(self, line: str):
+        if line in self._file_io.histories[-8:]:
+            # fix #1: folding the same line
+            return
         self._file_io.writeline(line)
         self._vectors.append(to_vec(line))
 
@@ -87,13 +88,12 @@ class _HistVectorGatherIO:
         return self._file_io[idx]
 
 
-
 def _analyzer(text, ngram):
     tokens = text
     for k in range(1, ngram + 1):
         n = len(tokens) - k
         for i in range(n):
-            yield tokens[i: i + k]
+            yield tokens[i : i + k]
 
 
 def to_vec(s: str):
@@ -125,22 +125,30 @@ def corr(a: Counter, b: Counter):
 
     return (get_score(a, b) * na + get_score(b, a) * nb) / (na + nb)
 
-rtpy_history_cached_file = _HistVectorGatherIO(FileIO(root / ('wd_history'), lambda: AutoJump.max_cache))
 
-@wise
-def cli(subcommand, *args):
-    if subcommand == "update":
-        [pwd] = args
+rtpy_history_cached_file = _HistVectorGatherIO(
+    FileIO(root / ("wd_history"), lambda: AutoJump.max_cache)
+)
+
+
+class CLI:
+    @staticmethod
+    def update(pwd: str):
         path_str = str(Path(pwd).absolute())
         rtpy_history_cached_file.writeline(path_str)
         return
-    elif subcommand == "complete":
-        text = ' '.join(args)
+
+    @staticmethod
+    def complete(args):
+        text = " ".join(args)
         correlation_asoc_lst = tuple(rtpy_history_cached_file.corr_with(text).items())
         try:
             p, stat = min(correlation_asoc_lst, key=lambda _: -_[1])
             sys.stdout.write(p)
         except ValueError:
-            sys.stdout.write('.')
-    else:
-        raise ValueError
+            sys.stdout.write(".")
+        return
+
+
+def cli():
+    wise(CLI)()

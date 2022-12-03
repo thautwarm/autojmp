@@ -1,28 +1,28 @@
 from setuptools import setup, find_packages
 from pathlib import Path
 
-version = "0.1.2"
-with Path('README.md').open() as readme:
+version = "0.2.0"
+with Path("README.md").open() as readme:
     readme = readme.read()
 
 
 setup(
-    name='autojmp',
+    name="autojmp",
     version=version if isinstance(version, str) else str(version),
-    keywords="CLI, autojump", # keywords of your project that separated by comma ","
-    description="portable autojump", # a concise introduction of your project
+    keywords="CLI, autojump",  # keywords of your project that separated by comma ","
+    description="portable autojump",  # a concise introduction of your project
     long_description=readme,
     long_description_content_type="text/markdown",
-    license='mit',
-    python_requires='>=3.5',
-    url='https://github.com/thautwarm/autojmp',
-    author='thautwarm',
-    author_email='twshere@outlook.com',
+    license="mit",
+    python_requires=">=3.5",
+    url="https://github.com/thautwarm/autojmp",
+    author="thautwarm",
+    author_email="twshere@outlook.com",
     packages=find_packages(),
-    entry_points={"console_scripts": ['ajmp=autojmp:cli']},
+    entry_points={"console_scripts": ["ajmp=autojmp:cli"]},
     # above option specifies what commands to install,
     # e.g: entry_points={"console_scripts": ["yapypy=yapypy.cmd:compiler"]}
-    install_requires=['wisepy2 >= 1.0'], # dependencies
+    install_requires=["wisepy2 >= 1.4"],  # dependencies
     platforms="any",
     classifiers=[
         "Programming Language :: Python :: 3.5",
@@ -34,5 +34,3 @@ setup(
     ],
     zip_safe=False,
 )
-
-
