@@ -25,6 +25,7 @@ class FileIO:
     @property
     def histories(self) -> list:
         self._load_history()
+        assert self._histories
         return self._histories
 
     def _load_history(self):
@@ -95,7 +96,6 @@ def _analyzer(text, ngram):
         for i in range(n):
             yield tokens[i : i + k]
 
-
 def to_vec(s: str):
     return Counter(_analyzer(s, AutoJump.word_analyze_len))
 
@@ -104,11 +104,11 @@ def corr(a: Counter, b: Counter):
     na = len(a)
     nb = len(b)
 
-    def get_score(l, r):
+    def get_score(left, right):
         weights = 0
         score = 0
-        for lk, lv in l.items():
-            v = r.get(lk)
+        for lk, lv in left.items():
+            v = right.get(lk)
             weight = len(lk)
             weights += weight
             if v is None:
@@ -139,7 +139,7 @@ class CLI:
         return
 
     @staticmethod
-    def complete(args):
+    def complete(*args: str):
         text = " ".join(args)
         correlation_asoc_lst = tuple(rtpy_history_cached_file.corr_with(text).items())
         try:
